@@ -1,0 +1,94 @@
+(async () => {
+  const checks = [];
+  const assert = (condition, name) => { if (!condition) throw new Error(name); checks.push(name); };
+  const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
+  const byId = id => document.getElementById(id);
+  const change = (form, name, value) => { form.elements[name].value = value; form.elements[name].dispatchEvent(new Event('change', {bubbles:true})); };
+  const cards = () => [...document.querySelectorAll('#all-cars .car-card')];
+  const headings = () => cards().map(card => card.querySelector('h3').textContent);
+  document.documentElement.style.scrollBehavior = 'auto';
+  assert(['home','cars','booking','about','contact','terms','why-choose-us','how-it-works','faq'].every(id => byId(id)), 'All main sections physically present');
+  const ids = [...document.querySelectorAll('[id]')].map(el => el.id);
+  assert(new Set(ids).size === ids.length, 'No duplicate element IDs');
+  assert(document.querySelectorAll('#featured-cars .car-card').length === 3 && cards().length === 10, 'Featured cars and full fleet preserved');
+  const internal = [...document.querySelectorAll('a[href]')].filter(link => link.origin === location.origin);
+  assert(internal.every(link => link.pathname.endsWith('/privacy-policy.html') || (link.pathname === location.pathname && byId(link.hash.slice(1)))), 'Every internal link resolves to a section or Privacy Policy');
+  for (const id of ['home','cars','booking','about','contact','terms']) {
+    document.querySelector(`a[href="#${id}"]`).click();
+    await pause(80);
+    assert(location.hash === `#${id}` && Math.abs(byId(id).getBoundingClientRect().top - 74) < 6, `Anchor navigation: ${id}`);
+  }
+  const images = [...document.querySelectorAll('img')];
+  images.forEach(img => img.loading = 'eager');
+  await Promise.all(images.map(img => img.decode()));
+  assert(images.length === 14 && images.every(img => img.complete && img.naturalWidth >= 1000 && img.alt), 'All 14 displayed photos load with descriptive alt text');
+  assert(new Set([...document.querySelectorAll('#all-cars img')].map(img => img.src)).size === 10, 'Ten distinct locally hosted vehicle photographs');
+  const filters = byId('car-filters');
+  change(filters, 'search', 'Golf');
+  assert(headings().length === 1 && headings()[0] === 'Volkswagen Golf 8 R', 'Vehicle search');
+  change(filters, 'search', 'Skoda');
+  assert(headings().length === 1 && headings()[0].includes('Octavia'), 'Search accepts brand names without accents');
+  change(filters, 'search', 'nonexistent-model');
+  assert(cards().length === 0 && document.querySelector('#all-cars .empty-state'), 'Empty filter results');
+  filters.reset(); change(filters, 'category', 'SUV'); change(filters, 'transmission', 'Automatic'); change(filters, 'fuel', 'Petrol');
+  assert(headings().length === 1 && headings()[0] === 'Peugeot 3008 II GT Premium', 'Combined category/transmission/fuel filters');
+  filters.reset();
+  for (const sort of ['low','high','az','za']) {
+    change(filters,'sort',sort);
+    const values = sort === 'low' || sort === 'high' ? cards().map(card => Number(card.querySelector('.price strong').textContent.replace(/[^0-9]/g,''))) : headings();
+    const expected = [...values].sort(typeof values[0] === 'number' ? (a,b) => a-b : (a,b) => a.localeCompare(b));
+    if (sort === 'high' || sort === 'za') expected.reverse();
+    assert(JSON.stringify(values) === JSON.stringify(expected), `Fleet sorting: ${sort}`);
+  }
+  filters.reset(); filters.dispatchEvent(new Event('change'));
+  document.querySelector('#all-cars [data-details="4"]').click();
+  await document.querySelector('.modal-image').decode();
+  assert(byId('modal-title').textContent === 'Volkswagen Golf 8 R', 'Correct vehicle details modal');
+  document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true}));
+  assert(!document.querySelector('[role="dialog"]'), 'Escape closes modal');
+  document.querySelector('#all-cars [data-details="3"]').click();
+  byId('modal-backdrop').click();
+  assert(!document.querySelector('[role="dialog"]'), 'Backdrop closes modal');
+  const booking = byId('booking-form');
+  booking.elements.name.value = 'Test Customer';
+  document.querySelector('#all-cars [data-book-car="4"]').click();
+  assert(byId('booking-vehicle').value === '4' && booking.elements.name.value === 'Test Customer' && location.hash === '#booking', 'Book selects vehicle without reloading or losing form data');
+  const quick = byId('quick-search');
+  const start = new Date(); start.setDate(start.getDate()+7);
+  const end = new Date(start); end.setDate(end.getDate()+3);
+  const startDate = start.toISOString().slice(0,10), endDate = end.toISOString().slice(0,10);
+  quick.elements.pickupDate.value = endDate; quick.elements.returnDate.value = startDate;
+  quick.requestSubmit();
+  assert(byId('quick-search-message').textContent.includes('return date'), 'Quick-search date validation');
+  quick.elements.pickupDate.value = startDate; quick.elements.returnDate.value = endDate;
+  quick.elements.pickup.value = 'Beni Mellal centre'; quick.elements.category.value = 'Economy';
+  change(filters,'search','no-match'); quick.requestSubmit();
+  assert(cards().length === 2 && location.hash === '#cars' && booking.elements.pickupDate.value === startDate && booking.elements.pickup.value === 'Beni Mellal centre', 'Quick search resets stale filters and transfers dates/location');
+  assert(byId('estimate-total').textContent === '1,170 MAD', 'Booking estimate updates from selected car and dates');
+  booking.elements.email.value = 'test@example.com'; booking.elements.phone.value = '+212600000000'; booking.elements.consent.checked = true;
+  booking.elements.returnDate.value = startDate; booking.elements.returnTime.value = '08:00'; booking.requestSubmit();
+  assert(byId('booking-error').textContent.includes('must be after'), 'Booking date/time validation');
+  booking.elements.returnDate.value = endDate; booking.elements.returnTime.value = '09:00'; booking.elements.email.value = 'invalid';
+  assert(!booking.checkValidity(), 'Booking email validation');
+  booking.elements.email.value = 'test@example.com'; booking.elements.consent.checked = false;
+  assert(!booking.checkValidity(), 'Booking requires consent');
+  booking.elements.consent.checked = true; booking.requestSubmit();
+  assert(booking.textContent.includes('CR-') && booking.textContent.includes('1,170 MAD'), 'Booking submission and reference');
+  document.querySelector('#featured-cars [data-book-car="1"]').click();
+  assert(byId('booking-vehicle').value === '1', 'A second booking can start after confirmation');
+  const contact = byId('contact-form');
+  assert(!contact.checkValidity(), 'Contact required fields validation');
+  contact.elements.name.value = 'Test Customer'; contact.elements.email.value = 'test@example.com'; contact.elements.message.value = 'Local automated check'; contact.requestSubmit();
+  assert(contact.textContent.includes('Thanks for reaching out.'), 'Contact confirmation');
+  document.querySelector('#faq summary').click();
+  assert(document.querySelector('#faq details').open, 'FAQ expands');
+  document.querySelector('#faq summary').click();
+  assert(!document.querySelector('#faq details').open, 'FAQ collapses');
+  for (const choice of ['settings','decline','accept']) {
+    byId('cookie-banner').hidden = false;
+    document.querySelector(`[data-cookie="${choice}"]`).click();
+    assert(localStorage.getItem('lawat-cookie-choice') === choice && byId('cookie-banner').hidden, `Cookie choice: ${choice}`);
+  }
+  assert(document.querySelectorAll('.image-credits li').length === 10 && document.querySelectorAll('.image-credits a[rel~="license"]').length === 10, 'All image sources and licenses credited');
+  return checks;
+})()
