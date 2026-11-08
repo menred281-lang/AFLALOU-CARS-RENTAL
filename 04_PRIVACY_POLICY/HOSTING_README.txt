@@ -1,1 +1,0 @@
-Host index.html, styles.css, app.js and logo.png together at a public HTTPS URL. The text is available without JavaScript. No public URL has been created by preparing these files. Enter the final hosted URL in Play Console; do not paste a local file path. Review your host logging and disable injected trackers to keep the webpage consistent with its notice.
