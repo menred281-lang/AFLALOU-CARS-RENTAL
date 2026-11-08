@@ -1,0 +1,47 @@
+{
+  "app": "AFLALOU Cars",
+  "version": "1.0.5",
+  "effective": "7 November 2026",
+  "sections": [
+    {
+      "id": "scope",
+      "title": "About AFLALOU Cars",
+      "body": "AFLALOU Cars is an offline car-catalogue and travel-budget planning app associated with AFLALOU CARS RENTAL. It is intended for adults. The catalogue uses fictional sample cars, static AI-generated illustrations and illustrative rates. Images are not photographs of the company fleet. The app does not confirm availability, make reservations, accept payments or check driving eligibility. No AI generation takes place in the app."
+    },
+    {
+      "id": "collection",
+      "title": "No personal data collected or shared",
+      "body": "The app does not collect, transmit, sell or share personal data with the developer or third parties. It has no accounts, booking forms, document uploads, ads, analytics, tracking or third-party crash-reporting SDKs. It does not access your identity, contacts, location, camera, microphone, photos or personal files, and does not read advertising IDs or other device identifiers. It makes no network requests and requests no Android permissions. Android app backup is disabled."
+    },
+    {
+      "id": "local",
+      "title": "Your choices stay in temporary memory",
+      "body": "Search, rental dates, vehicle choices, favourites, comparison selections, rate/seat filters, optional extras, fuel and shared-cost figures, and checklist answers are processed locally in app memory. They are not sent to a server or deliberately saved as persistent preferences. Temporary choices can remain while the app is backgrounded. Reset session in About clears the main planning state, including vehicle-inspection checks. Fuel and shared-cost inputs are discarded when you leave their screens. Closing the app process clears temporary state. No account or server record exists to delete. Clearing app state is not a promise of forensic memory erasure."
+    },
+    {
+      "id": "device",
+      "title": "Your device and other services",
+      "body": "The logo and car pictures are bundled with the app. No map, email, payment, social-media or AI service is integrated. The app disables personalised keyboard learning for its input fields where supported, but cannot control your keyboard or operating system. Android, Google Play, your device manufacturer and your keyboard provider may independently handle installation, system, purchase or diagnostic information under their own settings and policies. The app does not receive that information. Since it sends no user data, it does not provide a data-transmission encryption service or claim an independent security certification."
+    },
+    {
+      "id": "contact",
+      "title": "Contact the company",
+      "body": "AFLALOU CARS RENTAL\nSupport and privacy email: aflalou@hotmail.com\nPhone: +212 661 230 563\n\n20 RUE GHANA 1ER ETAGE APPARTEMENT 2 DIOUR JAMAA YACOUB ELMANSOUR 10000\nYacoub El Mansour (AR), Morocco (MA)\nD-U-N-S: 353718659\nSector: Rental Car\n\nThese details were supplied by the app owner. For privacy questions, email, call or write to the company using these details. The app itself does not send messages, place calls or read communications."
+    },
+    {
+      "id": "external",
+      "title": "If you contact the company separately",
+      "body": "Calls, emails and any rental transactions happen outside this offline app. Your service provider and the company will handle information you choose to send under their applicable practices. The company must separately explain any personal-data processing involved in those interactions. This policy does not describe all company activities. Avoid sending payment or identity documents through unverified channels."
+    },
+    {
+      "id": "webpage",
+      "title": "About this privacy webpage",
+      "body": "This webpage uses local HTML, CSS, JavaScript and a bundled logo. Its code has no analytics, cookies, browser storage, external fonts, data-entry forms or embedded third-party services. Navigation and printing run locally. If you use an email or phone link, your chosen external application handles that action. If this page is hosted online, the host receives connection requests and may log IP addresses, requested pages and browser information under its own settings. The operator must explain any additional hosting tools or logging it enables. The Android app does not automatically open or fetch this page."
+    },
+    {
+      "id": "changes",
+      "title": "Policy version and changes",
+      "body": "This policy covers AFLALOU Cars version 1.0.5, package ma.aflalou.aflalou_cars, effective 7 November 2026. If features change how information is handled, the app policy, this page and Google Play declarations must be updated before that change is released."
+    }
+  ]
+}
